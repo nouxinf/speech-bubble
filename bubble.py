@@ -1,5 +1,5 @@
 from PIL import Image, UnidentifiedImageError
-
+from io import BytesIO
 def main():
     img1 = None
     while img1 is None:
@@ -34,6 +34,23 @@ def main():
     # Paste resized img2 on top of img1 at (0, 0)
     img1.paste(img2_resized, (0, 0), mask=img2_resized)
     img1.show()
+
+def edit_image(image_bytes, bubble_dir):
+    img1 = Image.open(BytesIO(image_bytes))
+    if bubble_dir == "1" or bubble_dir.lower() == "left":
+        img2 = Image.open("speechbubbleleft.png")
+    else:
+        img2 = Image.open("speechbubbleright.png")
+
+    img1_width, img1_height = img1.size
+    new_height = int(img1_height * 0.2)
+    img2_resized = img2.resize((img1_width, new_height), Image.LANCZOS)
+    img1.paste(img2_resized, (0, 0), mask=img2_resized)
+
+    output = BytesIO()
+    img1.save(output, format="PNG")
+    output.seek(0)
+    return output
 
 if __name__ == "__main__":
     main()
